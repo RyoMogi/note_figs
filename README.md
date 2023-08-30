@@ -9,6 +9,7 @@ Githubでpullリクエストしていただいてもいいですし、twitterで
 
 # 連絡先
 X（Twitter）：[@rmogi_jpn](https://twitter.com/rmogi_jpn)
+
 メールアドレス：rymo[at]sdu.dk
 
 noteで日本や他の先進国の少子化について解説しております。
