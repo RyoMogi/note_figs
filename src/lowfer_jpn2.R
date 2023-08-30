@@ -2,8 +2,51 @@ library(tidyverse)
 library(readxl)
 Mycol <- c("#08306B", "#238B45", "#FD8D3C", "#D4B9DA", "#FFEDA0")
 
-# read data
-# data is from Japanese Census. Accessed on 29/05/2023
+
+# 記事：「低学歴男性の3人に1人が50歳時に未婚 | 少子化研究者による日本の少子化の現状解説②非婚化」https://note.com/rmogimogi/n/ne1e16055ec41
+
+# 図1
+# データソース：国立社会保障人口問題研究所『人口統計資料集2023年版』. Accessed on 25/05/2023
+# https://www.ipss.go.jp/syoushika/tohkei/Popular/P_Detail2023RE.asp?fname=T06-23.htm
+nevmar <- read_excel(".xls", skip = 3)
+
+names(nevmar) <- c("year", "male_nevmar", "male_mar", "male_wid", "male_div", 
+                       "female_nevmar", "female_mar", "female_wid", "female_div")
+
+nevmar %>% 
+  select(year, male_nevmar, female_nevmar) %>% 
+  gather(key = sex, value = prop_nevmar, -year) %>% 
+  mutate(sex = ifelse(sex == "male_nevmar", "男性", "女性"),
+         year = as.numeric(as.character(year))) %>% 
+  ggplot(aes(x = year, y = prop_nevmar, colour = sex, group = sex)) +
+  geom_line(size = 1.2) +
+  scale_colour_manual(values = c(Mycol[3], Mycol[2])) +
+  scale_x_continuous(n.breaks = 11) +
+  labs(x = "年次", y = "50歳時点での未婚者割合",
+       caption = "データソース：国立社会保障人口問題研究所『人口統計資料集2023年版』. 作成者：茂木良平") +
+  theme_minimal(base_family = "HiraKakuPro-W3") +
+  theme(legend.title = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.text = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 15))
+ggsave("out/jpn-nevmar.png", width = 7, height = 5, bg = "white")
+
+
+# 図2
+# データソース：国勢調査. Accessed on 29/05/2023
+# 2020年は就業状態基本集計の11-1
+# https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&toukei=00200521&tstat=000001136464&cycle=0&tclass1=000001136467&tclass2val=0
+
+# 2010年は産業等基本集計の10-1
+# https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&toukei=00200521&tstat=000001039448&cycle=0&tclass1=000001047544&tclass2=000001050184&tclass3val=0
+
+# 2000年は第2次基本集計の報告書被掲載表の11
+# https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&toukei=00200521&tstat=000000030001&cycle=0&tclass1=000000030147&tclass2=000000030148&tclass3=000000030150&tclass4val=0
+
+# 1990年は第2次基本集計の全国編の008
+# https://www.e-stat.go.jp/stat-search/database?page=1&layout=datalist&toukei=00200521&tstat=000000000023&cycle=0&tclass1=000001009029&tclass2=000001009030&tclass3val=0
+
 d2020 <- read.csv(file("data/jpn-census2020-11-1-nevmar-edu.csv", encoding = "cp932"), skip = 12)
 d2010 <- read.csv(file("data/jpn-census2010-10-1-nevmar-edu.csv", encoding = "cp932"), skip = 10)
 d2000 <- read_excel("data/jpn-census2000-11-nevmar-edu.xls", skip = 10)
